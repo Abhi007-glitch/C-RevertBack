@@ -3,6 +3,8 @@
  using namespace std;
 
 
+// function for which virtual keyword is added 
+
  class ParentClass{
   public:
    virtual void type()     // virtual keyword added.
@@ -14,8 +16,7 @@
     {
         cout<<"Parent's Extra function"<<endl;
     }
-
-    
+   
  };
 
 
