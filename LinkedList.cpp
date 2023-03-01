@@ -99,7 +99,7 @@ Node *MyLinkedList ::getTail()
     return this->tail;
 }
 
-void MyLinkedList ::addNodeAtStart(Node *node)
+void MyLinkedList :: addNodeAtStart(Node *node)
 {
 
     if (this->head==NULL)
@@ -114,7 +114,7 @@ void MyLinkedList ::addNodeAtStart(Node *node)
     return;
 }
 
-void MyLinkedList ::addNodeAtEnd(Node *node)
+void MyLinkedList :: addNodeAtEnd(Node *node)
 {
     if (this->head==NULL)
     {
@@ -127,7 +127,7 @@ void MyLinkedList ::addNodeAtEnd(Node *node)
     this->tail = node;
 }
 
-bool MyLinkedList ::isPresent(int val)
+bool MyLinkedList :: isPresent(int val)
 {
 
     Node *cur = this->head;
