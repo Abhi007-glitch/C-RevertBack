@@ -8,145 +8,155 @@ using namespace std;
 
 
 
-// void BPTree :: insert(int key, int data)
-// {
+void BPTree :: insert(int key, int data)
+{
    
-//    // if tree was empty
-//     if (root==NULL)
-//     {
-//      root = new Node();
-//      root->isLeaf=true;
-//      root->keys.push_back(key);
-//      vector<int> temp;
-//      new (&root->childNode.dataptr)vector<int>; // alocating memory to child
-//      root->childNode.dataptr.push_back(data);
-//      cout<<"Created a root with value " << key <<endl;
-//      return;
-//     }
-//     else
-//     {
-//         Node* cur = root;
-//         Node* parent=NULL;
+
+   // *********************************** CASE 1 : if tree was empty ***************************
+
+    if (root==NULL)
+    {
+     root = new Node();
+     root->isLeaf=true;
+     root->keys.push_back(key);
+     new (&root->childNode.dataptr)vector<int>; // alocating memory to child
+     root->childNode.dataptr.push_back(data);
+     cout<<"Created a root with value " << key <<endl;
+     return;
+    }
+    else   
+    {  
+        Node* cur = root;
+        Node* parent=NULL;
         
 
-//         //finding the right leaf node to insert key
-//         while(!cur->isLeaf)
-//         {   
-//           parent=cur;
-//             int idx = upper_bound(cur->keys.begin(),cur->keys.end(),key) -cur->keys.begin(); // searing for first value who is greate than key - because ptr at i index stores value lesser than key value at i in keys vector
-//             cur = cur->childNode.treeptr[idx];
-//         }
+        //finding the right leaf node to insert key
+        while(!cur->isLeaf)
+        {   
+          parent=cur;
+            int idx = upper_bound(cur->keys.begin(),cur->keys.end(),key) -cur->keys.begin(); // searing for first value who is greate than key - because ptr at i index stores value lesser than key value at i in keys vector
+            cur = cur->childNode.treeptr[idx];
+        }
        
-//        int size = cur->keys.size();
+      
+       // CASE 2: Space available inside leaf node
+       if (cur->keys.size()<leafNodeLen)   
+       {
+        // can insert value in this node 
+        // finding the right position to insert new node
+
+        int ix = upper_bound(cur->keys.begin(),cur->keys.end(),key) -cur->keys.end();
+        
+        cout<<"index where to insert new value "<<ix<<endl;
+        //inserting at end 
+        cur->keys.push_back(key);
+        cur->childNode.dataptr.push_back(data);
+        
+        //shifting values to place new inserted value at right position 
+      if (ix!=cur->keys.size()-1) 
+        {
+        for ( int i = cur->keys.size()-1 ;i>ix;i--)
+        {
+            cur->keys[i]=cur->keys[i-1];
+            cur->childNode.dataptr[i]=cur->childNode.dataptr[i-1];
+        }
+        cur->keys[ix]=key;
+        cur->childNode.dataptr[ix]=data;
+         }
+      cout<<"inserted Node Successfully"<<endl;
+       }
+       else 
+       {
+        // need to create a new node - overflow split of node will take place 
+         
+         
+
+         //creating temproray storage to store all data (new values too ) then split this data between older and newNdoe 
+         vector<int> tempkey(cur->keys);
+         vector<int> tempData(cur->childNode.dataptr);   // THESE VECTOR CAN BE REMOVED -NOT REQUIRED
+
+         //pushing new value 
+           int ix = std::upper_bound(cur->keys.begin(), cur->keys.end(), key) - cur->keys.begin();
+         tempkey.push_back(key);
+         tempData.push_back(data);
+         int temp;
+
+
+         if(ix!=tempkey.size()-1){
+          
+          for (int i =tempkey.size()-1;i>ix;i--)
+         {
+               
+              tempkey[i] = tempkey[i - 1];
+              tempData[i] = tempData[i - 1];
+          
+         
+         }
+          tempData[ix]=data;
+          tempkey[ix]=key;
+         }
+         
+
+
+         // created new node;
+         Node* nNode =new Node;  // newNode 
+         nNode->isLeaf=true;
+         // defining new vector for new Node inside union 
+        new (&nNode->childNode.dataptr)vector<int>;
+
+             // linking Nodes 
+         Node * tempp = cur->next;
+         cur->next = nNode;
+         nNode->next=tempp;
+
+
+         cur->keys.resize((leafNodeLen) / 2+1);  
+         cur->childNode.dataptr.resize((leafNodeLen)/2+1);
+         
+         for ( int i=0;i<=leafNodeLen/2;i++)
+         {
+          cur->keys[i]=tempkey[i];
+          cur->childNode.dataptr[i]=tempData[i];
+         }
+
+         // resizing vector - as we use size of vector as current size of the vector 
+        
+
        
-//        if (size<leafNodeLen)
-//        {
-//         // can insert value in this node 
-//         // finding the right position to insert new node
 
-//         int ix = upper_bound(cur->keys.begin(),cur->keys.end(),key) -cur->keys.end();
-        
-//         cout<<"index where to insert new value "<<ix<<endl;
-//         //inserting at end 
-//         cur->keys.push_back(key);
-//         cur->childNode.dataptr.push_back(data);
-        
-//         //shifting values to place new inserted value at right position 
-//       if (ix!=cur->keys.size()-1) 
-//         {
-//         for ( int i = cur->keys.size()-1 ;i>ix;i--)
-//         {
-//             cur->keys[i]=cur->keys[i-1];
-//             cur->childNode.dataptr[i]=cur->childNode.dataptr[i-1];
-//         }
-//         cur->keys[ix]=key;
-//         cur->childNode.dataptr[ix]=data;
-//          }
-//       cout<<"inserted Node Successfully"<<endl;
-//        }
-//        else 
-//        {
-//         // need to create a new node - overflow split of node will take place 
-         
-         
-
-//          //creating temproray storage to store all data (new values too ) then split this data between older and newNdoe 
-//          vector<int> tempkey(cur->keys);
-//          vector<int> tempData(cur->childNode.dataptr);
-
-//          //pushing new value 
-//            int ix = std::upper_bound(cur->keys.begin(), cur->keys.end(), key) - cur->keys.begin();
-//          tempkey.push_back(key);
-//          tempData.push_back(data);
-//          int size = tempkey.size();
-//          int temp;
-//          if(ix!=tempkey.size()-1){
-          
-//           for (int i =size-1;i>ix;i--)
-//          {
-          
-//               tempkey[i] = tempkey[i - 1];
-//               tempData[i] = tempData[i - 1];
-          
-         
-//          }
-//           tempData[ix]=data;
-//           tempkey[ix]=key;
-//          }
-         
-
-//          for ( int i=0;i<=leafNodeLen/2;i++)
-//          {
-//           cur->keys[i]=tempkey[i];
-//           cur->childNode.dataptr[i]=tempData[i];
-//          }
-
-//          // resizing vector - as we use size of vector as current size of the vector 
-//          cur->keys.resize((size) / 2+1);  
-//          cur->childNode.dataptr.resize((size)/2+1);
-         
-
-//          // created new node;
-//          Node* nNode =new Node();  // newNode 
-//          nNode->isLeaf=true;
-
-//         // defining new vector for new Node inside union 
-//         new (&nNode->childNode.dataptr)vector<int>;
-//         for ( int i =leafNodeLen/2+1;i<tempkey.size();i++)
-//         {
-//          nNode->keys.push_back(tempkey[i]);
-//          nNode->childNode.dataptr.push_back(tempkey[i]);
-//         }
+      
+        for ( int i =(leafNodeLen)/2+1;i<tempkey.size();i++)
+        {
+         nNode->keys.push_back(tempkey[i]);
+         nNode->childNode.dataptr.push_back(tempkey[i]);
+        }
 
  
-//         // linking Nodes 
-//        Node * tempp = cur->next;
-//        cur->next = nNode;
-//        nNode->next=tempp;
-//        // we need to create a new root of the tree
-//        if (cur==root)
-//        {
-//          Node * newRoot = new Node();
-//          newRoot->isLeaf=false;
-//          newRoot->keys.push_back(nNode->keys[0]);
-//          new (&newRoot->childNode.treeptr)vector<Node *>;
-//          newRoot->childNode.treeptr.push_back(cur);
-//          newRoot->childNode.treeptr.push_back(nNode);
-//          root = newRoot;
-//          cout<<"Created a new Root after insertion of new key value"<<endl;
-//        }
-//        else 
-//        {
-//         // passing updates to parent nodes;
-//         cout<<"Passing value from leaf to internal Node - insertion at internal Node begins here"<<endl;
-//         insertAtNonLeaf(nNode->keys[0],&parent,&nNode);
-//        }
+    
+       // we need to create a new root of the tree
+       if (cur==root)
+       {
+         Node * newRoot = new Node();
+         newRoot->isLeaf=false;
+         newRoot->keys.push_back(nNode->keys[0]);
+         new (&newRoot->childNode.treeptr)vector<Node *>;
+         newRoot->childNode.treeptr.push_back(cur);
+         newRoot->childNode.treeptr.push_back(nNode);
+         root = newRoot;
+         cout<<"Created a new Root after insertion of new key value"<<endl;
+       }
+       else 
+       {
+        // passing updates to parent nodes;
+        cout<<"Passing value from leaf to internal Node - insertion at internal Node begins here"<<endl;
+        insertAtNonLeaf(nNode->keys[0],&parent,&nNode);
+       }
        
-//        }
+       }
 
-//     }
+    }
 
-// }
+}
 
 
 
@@ -278,131 +288,131 @@ void BPTree::insert(int key, int data) {  //in Leaf Node
 
 
 
-// void BPTree :: insertAtNonLeaf(int val , Node** parentNode, Node ** childToBeInserted )
-// {
-//     Node * cur = (*parentNode);
-//   if ((*parentNode)->keys.size()<internalNodeLen) /// *********** #BHUT JAGHA HAI **************************
-//   {
-//     cout<<"************* #BHUT JAGA HE -InternalNode ***************** "<<endl;
+void BPTree :: insertAtNonLeaf(int val , Node** parentNode, Node ** childToBeInserted )
+{
+    Node * cur = (*parentNode);
+  if ((*parentNode)->keys.size()<internalNodeLen) /// *********** #BHUT JAGHA HAI **************************
+  {
+    cout<<"************* #BHUT JAGA HE -InternalNode ***************** "<<endl;
     
      
-//      // finding the right position for inserting the value using Binary Search
-//      int idx = upper_bound(cur->keys.begin(),cur->keys.end(),val)-cur->keys.begin();
+     // finding the right position for inserting the value using Binary Search
+     int idx = upper_bound(cur->keys.begin(),cur->keys.end(),val)-cur->keys.begin();
 
-//      cur->keys.push_back(val);
-//      cur->childNode.treeptr.push_back(*childToBeInserted);
+     cur->keys.push_back(val);
+     cur->childNode.treeptr.push_back(*childToBeInserted);
      
 
-//      // sepearate loop for keys and treePtr inseration - because we have one extra nodePtr at the start 
-//      for ( int i=cur->keys.size()-1;i>idx;i--)
-//      {
-//       cur->keys[i]=cur->keys[i-1];
-//      }
-//      cur->keys[idx]=val;
+     // sepearate loop for keys and treePtr inseration - because we have one extra nodePtr at the start 
+     for ( int i=cur->keys.size()-1;i>idx;i--)
+     {
+      cur->keys[i]=cur->keys[i-1];
+     }
+     cur->keys[idx]=val;
 
 
-//      for ( int i =cur->childNode.treeptr.size()-1;i>idx-1;i--)
-//      {
-//       cur->childNode.treeptr[i]=cur->childNode.treeptr[i-1];
-//      }
-//      cur->childNode.treeptr[idx+1]=(*childToBeInserted);
+     for ( int i =cur->childNode.treeptr.size()-1;i>idx-1;i--)
+     {
+      cur->childNode.treeptr[i]=cur->childNode.treeptr[i-1];
+     }
+     cur->childNode.treeptr[idx+1]=(*childToBeInserted);
    
-//    cout<<"inserted into internal Nodes"<<endl;
+   cout<<"inserted into internal Nodes"<<endl;
 
-//   }
-//   else  /// **************** # NHI JAGHA HAI **********************************
-//   {
+  }
+  else  /// **************** # NHI JAGHA HAI **********************************
+  {
     
-//     cout<<"*********** #NHI JAGHA HAI - InternalNode ********************"<<endl;
+    cout<<"*********** #NHI JAGHA HAI - InternalNode ********************"<<endl;
    
 
-//     // arranging and sorting new key and ptr
-//     vector<int> tempkeys(cur->keys);
-//     vector<Node *> tempTreePtr(cur->childNode.treeptr);
+    // arranging and sorting new key and ptr
+    vector<int> tempkeys(cur->keys);
+    vector<Node *> tempTreePtr(cur->childNode.treeptr);
 
-//     int idx = upper_bound(cur->keys.begin(),cur->keys.end(),val)-cur->keys.begin();
+    int idx = upper_bound(cur->keys.begin(),cur->keys.end(),val)-cur->keys.begin();
 
-//     tempkeys.push_back(val);
-//     tempTreePtr.push_back(*childToBeInserted);
+    tempkeys.push_back(val);
+    tempTreePtr.push_back(*childToBeInserted);
 
-//     for (int i =tempkeys.size()-1;i>idx;i--)
-//     {
-//       tempkeys[i]=tempkeys[i-1];
-//     }
-//     tempkeys[idx]=val;
+    for (int i =tempkeys.size()-1;i>idx;i--)
+    {
+      tempkeys[i]=tempkeys[i-1];
+    }
+    tempkeys[idx]=val;
 
-//     for ( int i =tempTreePtr.size();i>idx+1;i--)
-//     {
-//       tempTreePtr[i]=tempTreePtr[i-1];
-//     }
-//     tempTreePtr[idx+1]=*childToBeInserted;
+    for ( int i =tempTreePtr.size();i>idx+1;i--)
+    {
+      tempTreePtr[i]=tempTreePtr[i-1];
+    }
+    tempTreePtr[idx+1]=*childToBeInserted;
 
 
-//     //splitting and creation of new Node 
+    //splitting and creation of new Node 
     
-//     // creating new Ndoe 
-//     Node * newNode = new Node();
-//     newNode->isLeaf=false;
-//     new (&newNode->childNode.treeptr) vector<Node *>;  // defining and allocating space for union data member used in this node 
+    // creating new Ndoe 
+    Node * newNode = new Node();
+    newNode->isLeaf=false;
+    new (&newNode->childNode.treeptr) vector<Node *>;  // defining and allocating space for union data member used in this node 
 
 
-//     // property of B+TREE - internal node pass value to their parent while the leafNode pass the copy of the key to the parent 
-//     //  this value would not be stored in any of current nodes it will be passed to the parent 
-//     int splitValue = tempkeys[tempkeys.size()/2]; 
+    // property of B+TREE - internal node pass value to their parent while the leafNode pass the copy of the key to the parent 
+    //  this value would not be stored in any of current nodes it will be passed to the parent 
+    int splitValue = tempkeys[tempkeys.size()/2]; 
   
-//     /// *******************************************  Spliting Keys **********************************************
-//     for ( int i =0;i<tempkeys.size()/2;i++)
-//     {
-//       cur->keys[i]= tempkeys[i];
-//     }
+    /// *******************************************  Spliting Keys **********************************************
+    for ( int i =0;i<tempkeys.size()/2;i++)
+    {
+      cur->keys[i]= tempkeys[i];
+    }
 
 
-//      // not include tempkeys.size()/2 index key in any of the split to as we have to send that key to the next paretn in the tree structure
-//     for ( int i= tempkeys.size()/2+1;i<tempkeys.size();i++)
-//     {
-//        newNode->keys.push_back(tempkeys[i]);
-//     }
+     // not include tempkeys.size()/2 index key in any of the split to as we have to send that key to the next paretn in the tree structure
+    for ( int i= tempkeys.size()/2+1;i<tempkeys.size();i++)
+    {
+       newNode->keys.push_back(tempkeys[i]);
+    }
  
 
-//     // ********************************************* spliting nodePtrs *********************************************
-//     // if used tempTreePtr.size()/2 then it may not be equal to tempkeys.size()/2 thus using same tempkeys.size for both the splits
-//     for ( int i =0; i<tempkeys.size()/2+1; i++)  // one extra pointer the first pointer (rest all pair )
-//     {
-//        cur->childNode.treeptr[i]=tempTreePtr[i];
-//     }
+    // ********************************************* spliting nodePtrs *********************************************
+    // if used tempTreePtr.size()/2 then it may not be equal to tempkeys.size()/2 thus using same tempkeys.size for both the splits
+    for ( int i =0; i<tempkeys.size()/2+1; i++)  // one extra pointer the first pointer (rest all pair )
+    {
+       cur->childNode.treeptr[i]=tempTreePtr[i];
+    }
 
-//     for ( int i=tempkeys.size()/2+1;i<tempTreePtr.size();i++)
-//     {
-//       newNode->childNode.treeptr.push_back(tempTreePtr[i]);
-//     }
+    for ( int i=tempkeys.size()/2+1;i<tempTreePtr.size();i++)
+    {
+      newNode->childNode.treeptr.push_back(tempTreePtr[i]);
+    }
     
 
-//     // resizing cur Node - as we use size of keys vector to determine the available space inside a node
-//     cur->keys.resize(tempkeys.size()/2);
-//     cur->childNode.treeptr.resize(tempkeys.size()/2+1);
+    // resizing cur Node - as we use size of keys vector to determine the available space inside a node
+    cur->keys.resize(tempkeys.size()/2);
+    cur->childNode.treeptr.resize(tempkeys.size()/2+1);
 
-//     // creation of new root will take place as we have splitted the root
-//     if (cur==root)
-//     {
-//       Node* newRoot = new Node();
-//       newRoot->isLeaf =false;
-//       new (&newRoot->childNode.treeptr) vector<Node *>;
-//       newRoot->keys.push_back(splitValue);
-//       newRoot->childNode.treeptr.push_back(cur);
-//       newRoot->childNode.treeptr.push_back(newNode);
-//       root = newRoot;
-//       cout<<"Creation of new Node took place while Doing internal insertion operation."<<endl;
+    // creation of new root will take place as we have splitted the root
+    if (cur==root)
+    {
+      Node* newRoot = new Node();
+      newRoot->isLeaf =false;
+      new (&newRoot->childNode.treeptr) vector<Node *>;
+      newRoot->keys.push_back(splitValue);
+      newRoot->childNode.treeptr.push_back(cur);
+      newRoot->childNode.treeptr.push_back(newNode);
+      root = newRoot;
+      cout<<"Creation of new Node took place while Doing internal insertion operation."<<endl;
 
-//     }
-//     else 
-//     {
-//       cout<<"Internal Splitting Continues"<<endl;
-//       insertAtNonLeaf(splitValue,findParent(root,cur), &newNode);
-//     }
+    }
+    else 
+    {
+      cout<<"Internal Splitting Continues"<<endl;
+      insertAtNonLeaf(splitValue,findParent(root,cur), &newNode);
+    }
 
-//   }
+  }
 
-// }
+};
 
 
 

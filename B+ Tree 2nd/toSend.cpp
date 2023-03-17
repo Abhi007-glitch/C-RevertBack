@@ -53,7 +53,6 @@ class Node
 };
 
 
-
 Node::ptr::ptr() {
 }
 
@@ -87,14 +86,6 @@ Node* firstLeftNode(Node* cursor);
 
 //helper functions
 Node** findParent(Node* cur, Node* child);
-
-// BPTree(int leafNodeLen, int internallNodeLen); -- giving error check why
-// {
-  
-//   this->root =NULL;
-//   this->leadNodeLen = leafNodeLen;
-//   this->internalNodeLen = internalNodeLen;
-// };
 
 
 };
@@ -253,145 +244,6 @@ void BPTree :: insert(int key, int data)
 
 
 
-
-
-
-
-
-
-
-
-// void BPTree :: insertAtNonLeaf(int val , Node** parentNode, Node ** childToBeInserted )
-// {
-//     Node * cur = (*parentNode);
-//   if ((*parentNode)->keys.size()<internalNodeLen) /// *********** #BHUT JAGHA HAI **************************
-//   {
-//     cout<<"************* #BHUT JAGA HE -InternalNode ***************** "<<endl;
-    
-     
-//      // finding the right position for inserting the value using Binary Search
-//      int idx = upper_bound(cur->keys.begin(),cur->keys.end(),val)-cur->keys.begin();
-
-//      cur->keys.push_back(val);
-//      cur->childNode.treeptr.push_back(*childToBeInserted);
-     
-
-//      // sepearate loop for keys and treePtr inseration - because we have one extra nodePtr at the start 
-//      for ( int i=cur->keys.size()-1;i>idx;i--)
-//      {
-//       cur->keys[i]=cur->keys[i-1];
-//      }
-//      cur->keys[idx]=val;
-
-
-//      for ( int i =cur->childNode.treeptr.size()-1;i>idx-1;i--)
-//      {
-//       cur->childNode.treeptr[i]=cur->childNode.treeptr[i-1];
-//      }
-//      cur->childNode.treeptr[idx+1]=(*childToBeInserted);
-   
-//    cout<<"inserted into internal Nodes"<<endl;
-
-//   }
-//   else  /// **************** # NHI JAGHA HAI **********************************
-//   {
-    
-//     cout<<"*********** #NHI JAGHA HAI - InternalNode ********************"<<endl;
-   
-
-//     // arranging and sorting new key and ptr
-//     vector<int> tempkeys(cur->keys);
-//     vector<Node *> tempTreePtr(cur->childNode.treeptr);
-
-//     int idx = upper_bound(cur->keys.begin(),cur->keys.end(),val)-cur->keys.begin();
-
-//     tempkeys.push_back(val);
-//     tempTreePtr.push_back(*childToBeInserted);
-
-//     for (int i =tempkeys.size()-1;i>idx;i--)
-//     {
-//       tempkeys[i]=tempkeys[i-1];
-//     }
-//     tempkeys[idx]=val;
-
-//     for ( int i =tempTreePtr.size();i>idx+1;i--)
-//     {
-//       tempTreePtr[i]=tempTreePtr[i-1];
-//     }
-//     tempTreePtr[idx+1]=*childToBeInserted;
-
-
-//     //splitting and creation of new Node 
-    
-//     // creating new Ndoe 
-//     Node * newNode = new Node();
-//     newNode->isLeaf=false;
-//     new (&newNode->childNode.treeptr) vector<Node *>;  // defining and allocating space for union data member used in this node 
-
-
-//     // property of B+TREE - internal node pass value to their parent while the leafNode pass the copy of the key to the parent 
-//     //  this value would not be stored in any of current nodes it will be passed to the parent 
-//     int splitValue = tempkeys[tempkeys.size()/2]; 
-  
-//     /// *******************************************  Spliting Keys **********************************************
-//     for ( int i =0;i<tempkeys.size()/2;i++)
-//     {
-//       cur->keys[i]= tempkeys[i];
-//     }
-
-
-//      // not include tempkeys.size()/2 index key in any of the split to as we have to send that key to the next paretn in the tree structure
-//     for ( int i= tempkeys.size()/2+1;i<tempkeys.size();i++)
-//     {
-//        newNode->keys.push_back(tempkeys[i]);
-//     }
- 
-
-//     // ********************************************* spliting nodePtrs *********************************************
-//     // if used tempTreePtr.size()/2 then it may not be equal to tempkeys.size()/2 thus using same tempkeys.size for both the splits
-//     for ( int i =0; i<tempkeys.size()/2+1; i++)  // one extra pointer the first pointer (rest all pair )
-//     {
-//        cur->childNode.treeptr[i]=tempTreePtr[i];
-//     }
-
-//     for ( int i=tempkeys.size()/2+1;i<tempTreePtr.size();i++)
-//     {
-//       newNode->childNode.treeptr.push_back(tempTreePtr[i]);
-//     }
-    
-
-//     // resizing cur Node - as we use size of keys vector to determine the available space inside a node
-//     cur->keys.resize(tempkeys.size()/2);
-//     cur->childNode.treeptr.resize(tempkeys.size()/2+1);
-
-//     // creation of new root will take place as we have splitted the root
-//     if (cur==root)
-//     {
-//       Node* newRoot = new Node();
-//       newRoot->isLeaf =false;
-//       new (&newRoot->childNode.treeptr) vector<Node *>;
-//       newRoot->keys.push_back(splitValue);
-//       newRoot->childNode.treeptr.push_back(cur);
-//       newRoot->childNode.treeptr.push_back(newNode);
-//       root = newRoot;
-//       cout<<"Creation of new Node took place while Doing internal insertion operation."<<endl;
-
-//     }
-//     else 
-//     {
-//       cout<<"Internal Splitting Continues"<<endl;
-//       insertAtNonLeaf(splitValue,findParent(root,cur), &newNode);
-//     }
-
-//   }
-
-// }
-
-
-
-
-
-
 void BPTree :: insertAtNonLeaf(int val , Node** cursor, Node ** childToBeInserted )
 {
   if ((*cursor)->keys.size() < internalNodeLen - 1) {
@@ -527,31 +379,6 @@ Node** BPTree :: findParent(Node* cur, Node* child)
   return &parent;
 };
 
-// Node** BPTree::findParent(Node* cursor, Node* child) {
-//     /*
-// 		Finds parent using depth first traversal and ignores leaf nodes as they cannot be parents
-// 		also ignores second last level because we will never find parent of a leaf node during insertion using this function
-// 	*/
-
-//     if (cursor->isLeaf || cursor->childNode.treeptr[0]->isLeaf)
-//         return NULL;
- 
-    
-//     for (int i = 0; i < cursor->childNode.treeptr.size(); i++) {
-//         if (cursor->childNode.treeptr[i] == child) {
-//             parent = cursor;
-//         } else {
-           
-//             Node* tmpCursor = cursor->childNode.treeptr[i];
-//             findParent(tmpCursor, child);
-//         }
-//     }
-
-//     return &parent;
-// }
-
-
-
 
 Node* BPTree::firstLeftNode(Node* cursor) {
   if (cursor==NULL)
@@ -645,3 +472,112 @@ void BPTree :: printTreeLevelOrder(Node* cursor)
         cout << endl;
     }
 }
+
+
+
+void insertionMethod(BPTree** bPTree) {
+    int id;
+    int age;
+
+
+    cout << "Please provide the Id: ";
+    cin >> id;
+
+    cout << "\nEnter your age";
+    cin >> age;
+
+    
+
+    (*bPTree)->insert(id, age);
+    
+    cout << "Insertion of roll No: " << id << " Successful"<<endl;
+}
+
+void searchMethod(BPTree* tree) {
+    int id;
+    cout << "What's the id to Search? ";
+    cin >> id;
+
+    tree->search(id);
+}
+
+
+
+void printMethod(BPTree* bPTree) {
+    int type;
+    cout<<"1.Level Order Traversal"<<endl;
+    cout<<"2.Seqential Traversal "<<endl;
+    cout << "\nHere is your File Structure" << endl;
+    
+    cin>>type;
+    if (type==1)
+    {
+    bPTree->printTreeLevelOrder(bPTree->root);
+    }
+    else{
+   bPTree->printTree(bPTree->root);
+    }
+
+    
+        
+}
+
+
+int main ()
+{
+    cout << "\n*** B+ tree visualisation**\n"
+         << endl;
+
+    bool flag = true;
+    int option;
+
+    int internalNodeLen = 4, leafNodeLen = 3;  // some random intial value
+    cout << "Please provide the value to limit maximum child Internal Nodes can have: ";
+    cin >> internalNodeLen;
+    cout << "\nAnd Now Limit the value to limit maximum Nodes Leaf Nodes can have: ";
+    cin >> leafNodeLen;
+
+    BPTree* bPTree = new BPTree(leafNodeLen, internalNodeLen);
+
+    do {
+        cout << "\nPlease provide the queries with respective keys : " << endl;
+        cout << "\tPress 1: Insertion \n\tPress 2: Search \n\tPress 3: Print Tree\n\tPress 4: ABORT!" << endl;
+        cin >> option;
+
+        switch (option) {
+            case 1:
+                insertionMethod(&bPTree);
+                break;
+            case 2:
+                searchMethod(bPTree);
+                break;
+            case 3:
+                printMethod(bPTree);
+                break;
+            default:
+                flag = false;
+                break;
+        }
+    }while (flag);
+
+   
+    // int n ;
+    // cin>>n;
+    // int temp=0;
+    // for ( int i =0;i<n;i++)
+    // {
+    //     temp = rand()%10000;
+    //    (bPTree)->insert(temp, temp);
+    // }
+
+    // printMethod(bPTree);
+ 
+
+
+    return 0;
+
+}
+
+
+
+

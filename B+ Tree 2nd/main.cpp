@@ -3,6 +3,7 @@
 #include<algorithm>
 #include<string>
 #include "B+tree.h"
+#include <cstdlib>
 
 using namespace std;
 
@@ -37,10 +38,22 @@ void searchMethod(BPTree* tree) {
 
 
 void printMethod(BPTree* bPTree) {
-    
-
+    int type;
+    cout<<"1.Level Order Traversal"<<endl;
+    cout<<"2.Seqential Traversal "<<endl;
     cout << "\nHere is your File Structure" << endl;
-        bPTree->printTree(bPTree->root);
+    
+    cin>>type;
+    if (type==1)
+    {
+    bPTree->printTreeLevelOrder(bPTree->root);
+    }
+    else{
+   bPTree->printTree(bPTree->root);
+    }
+
+    
+        
 }
 
 
@@ -81,5 +94,21 @@ int main ()
         }
     }while (flag);
 
+   
+    // int n ;
+    // cin>>n;
+    // int temp=0;
+    // for ( int i =0;i<n;i++)
+    // {
+    //     temp = rand()%10000;
+    //    (bPTree)->insert(temp, temp);
+    // }
+
+    // printMethod(bPTree);
+ 
+
+
     return 0;
+
 }
+
