@@ -303,15 +303,15 @@ void BPTree :: insertAtNonLeaf(int val , Node** parentNode, Node ** childToBeIns
      cur->childNode.treeptr.push_back(*childToBeInserted);
      
 
-     // sepearate loop for keys and treePtr inseration - because we have one extra nodePtr at the start 
+     // sepearate loop for keys and treePtr insertion - because we have one extra nodePtr at the start 
      for ( int i=cur->keys.size()-1;i>idx;i--)
      {
       cur->keys[i]=cur->keys[i-1];
      }
      cur->keys[idx]=val;
 
-
-     for ( int i =cur->childNode.treeptr.size()-1;i>idx-1;i--)
+     // critical steps understand it well here main rearrangemet of pointers is being done -(understand why id+1 - by dry run)
+     for ( int i =cur->childNode.treeptr.size()-1;i>idx+1;i--) 
      {
       cur->childNode.treeptr[i]=cur->childNode.treeptr[i-1];
      }
@@ -341,7 +341,7 @@ void BPTree :: insertAtNonLeaf(int val , Node** parentNode, Node ** childToBeIns
     }
     tempkeys[idx]=val;
 
-    for ( int i =tempTreePtr.size();i>idx+1;i--)
+    for ( int i =tempTreePtr.size()-1;i>idx+1;i--)
     {
       tempTreePtr[i]=tempTreePtr[i-1];
     }
@@ -367,7 +367,7 @@ void BPTree :: insertAtNonLeaf(int val , Node** parentNode, Node ** childToBeIns
     }
 
 
-     // not include tempkeys.size()/2 index key in any of the split to as we have to send that key to the next paretn in the tree structure
+     // not include tempkeys.size()/2 index key in any of the split to as we have to send that key to the next parent in the tree structure
     for ( int i= tempkeys.size()/2+1;i<tempkeys.size();i++)
     {
        newNode->keys.push_back(tempkeys[i]);

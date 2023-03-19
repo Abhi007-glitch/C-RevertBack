@@ -9,6 +9,7 @@ using namespace std;
 
 
 
+
 void insertionMethod(BPTree** bPTree) {
     int id;
     int age;
@@ -50,10 +51,22 @@ void printMethod(BPTree* bPTree) {
     }
     else{
    bPTree->printTree(bPTree->root);
-    }
-
-    
+    }   
         
+}
+
+
+void deleteMethod(BPTree* bPTree) {
+    cout << "Showing you the Tree, Choose a key from here: " << endl;
+    bPTree->printTree(bPTree->root);
+ 
+    int keyTodelete;
+    cout << "Enter a key to delete: " << endl;
+    cin >> keyTodelete;
+    bPTree->remove(keyTodelete);
+
+    //Displaying
+    bPTree->printTree(bPTree->root);
 }
 
 
@@ -75,7 +88,7 @@ int main ()
 
     do {
         cout << "\nPlease provide the queries with respective keys : " << endl;
-        cout << "\tPress 1: Insertion \n\tPress 2: Search \n\tPress 3: Print Tree\n\tPress 4: ABORT!" << endl;
+        cout << "\tPress 1: Insertion \n\tPress 2: Search \n\tPress 3: Print Tree\n\tPress 4: Delete! \n\tPress 5: End the program"<<endl;
         cin >> option;
 
         switch (option) {
@@ -88,11 +101,25 @@ int main ()
             case 3:
                 printMethod(bPTree);
                 break;
-            default:
+            case 4:
+                deleteMethod(bPTree);
+                break;
+            case 5:
                 flag = false;
                 break;
+            default :
+               cout<<"Please enter a vaild command "<<endl;
+               break;
         }
     }while (flag);
+
+    vector<int>arr = {1,4,9,10,15,16,20,25,11,12,13};
+
+    for ( int i =0;i<arr.size();i++)
+    {
+        bPTree->insert(arr[i],arr[i]);
+    }
+
 
    
     // int n ;
@@ -105,10 +132,23 @@ int main ()
     // }
 
     // printMethod(bPTree);
- 
+    // // printMethod(bPTree);
 
 
+    // for (int i=0;i<arr.size()-1;i++)
+    // {
+    //      bPTree->remove(arr[i]);
+    // bPTree->printTreeLevelOrder(bPTree->root);
+    // }
+   
+    
+    // //  bPTree->remove(20);
+    // // bPTree->printTreeLevelOrder(bPTree->root);
     return 0;
 
 }
+
+
+
+
 

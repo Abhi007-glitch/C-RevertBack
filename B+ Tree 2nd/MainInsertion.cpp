@@ -132,3 +132,107 @@ void BPTree::insert(int key, int data) {  //in Leaf Node
 }
 
 
+
+void BPTree :: insertAtNonLeaf(int val , Node** cursor, Node ** childToBeInserted )
+{
+  if ((*cursor)->keys.size() < internalNodeLen - 1) {
+        /*
+			If cursor is not full find the position for the new key.
+		*/
+        int i = std::upper_bound((*cursor)->keys.begin(), (*cursor)->keys.end(), val) - (*cursor)->keys.begin();
+        (*cursor)->keys.push_back(val);
+        //new (&(*cursor)->childNode.treeptr) std::vector<Node*>;
+        //// now, root->childNode.treeptr is the active member of the union
+        (*cursor)->childNode.treeptr.push_back(*childToBeInserted);
+
+        if (i != (*cursor)->keys.size() - 1) {  // if there are more than one element
+            // Different loops because size is different for both (i.e. diff of one)
+
+            for (int j = (*cursor)->keys.size() - 1; j > i; j--) {  // shifting the position for keys and datapointer
+                (*cursor)->keys[j] = (*cursor)->keys[j - 1];
+            }
+
+            for (int j = (*cursor)->childNode.treeptr.size() - 1; j > (i + 1); j--) {
+                (*cursor)->childNode.treeptr[j] = (*cursor)->childNode.treeptr[j - 1];
+            }
+
+            (*cursor)->keys[i] = val;
+            (*cursor)->childNode.treeptr[i + 1] = *childToBeInserted;
+        }
+        cout << "Inserted key in the internal node :)" << endl;
+    } else {  //splitting
+        cout << "Inserted Node in internal node successful" << endl;
+        cout << "Overflow in internal:( HAIYAA! splitting internal nodes" << endl;
+
+        vector<int> virtualKeyNode((*cursor)->keys);
+        vector<Node*> virtualTreePtrNode((*cursor)->childNode.treeptr);
+
+        int i = std::upper_bound((*cursor)->keys.begin(), (*cursor)->keys.end(), val) - (*cursor)->keys.begin();  //finding the position for val
+        virtualKeyNode.push_back(val);                                                                   // to create space
+        virtualTreePtrNode.push_back(*childToBeInserted);                                                           // to create space
+
+        if (i != virtualKeyNode.size() - 1) {
+            for (int j = virtualKeyNode.size() - 1; j > i; j--) {  // shifting the position for keys and datapointer
+                virtualKeyNode[j] = virtualKeyNode[j - 1];
+            }
+
+            for (int j = virtualTreePtrNode.size() - 1; j > (i + 1); j--) {
+                virtualTreePtrNode[j] = virtualTreePtrNode[j - 1];
+            }
+
+            virtualKeyNode[i] = val;
+            virtualTreePtrNode[i + 1] = *childToBeInserted;
+        }
+
+        int partitionKey;                                            //exclude middle element while splitting
+        partitionKey = virtualKeyNode[(virtualKeyNode.size() / 2)];  //right biased
+        int partitionIdx = (virtualKeyNode.size() / 2);
+
+        //resizing and copying the keys & TreePtr to OldNode
+        (*cursor)->keys.resize(partitionIdx);
+        (*cursor)->childNode.treeptr.resize(partitionIdx + 1);
+        (*cursor)->childNode.treeptr.resize(partitionIdx + 1);
+        for (int i = 0; i < partitionIdx; i++) {
+            (*cursor)->keys[i] = virtualKeyNode[i];
+        }
+
+        for (int i = 0; i < partitionIdx + 1; i++) {
+            (*cursor)->childNode.treeptr[i] = virtualTreePtrNode[i];
+        }
+
+        Node* newInternalNode = new Node;
+        new (&newInternalNode->childNode.treeptr) std::vector<Node*>;
+        //Pushing new keys & TreePtr to NewNode
+
+        for (int i = partitionIdx + 1; i < virtualKeyNode.size(); i++) {
+            newInternalNode->keys.push_back(virtualKeyNode[i]);
+        }
+
+        for (int i = partitionIdx + 1; i < virtualTreePtrNode.size(); i++) {  // because only key is excluded not the pointer
+            newInternalNode->childNode.treeptr.push_back(virtualTreePtrNode[i]);
+        }
+
+        if ((*cursor) == root) {
+            /*
+				If cursor is a root we create a new Node
+			*/
+            Node* newRoot = new Node;
+            newRoot->keys.push_back(partitionKey);
+            new (&newRoot->childNode.treeptr) std::vector<Node*>;
+            newRoot->childNode.treeptr.push_back(*cursor);
+            //// now, newRoot->childNode.treeptr is the active member of the union
+            newRoot->childNode.treeptr.push_back(newInternalNode);
+
+            root = newRoot;
+            cout << "Created new ROOT!" << endl;
+        } else {
+            /*
+				::Recursion::
+			*/
+            insertAtNonLeaf(partitionKey, findParent(root, *cursor), &newInternalNode);
+        }
+    }
+}
+
+
+
